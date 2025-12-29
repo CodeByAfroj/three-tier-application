@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
-    - host: app.192.168.170.34.nip.io
+    - host: app.192.168.163.138.nip.io
       http:
         paths:
           # Frontend
