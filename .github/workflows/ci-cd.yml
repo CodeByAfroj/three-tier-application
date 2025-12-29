@@ -1,0 +1,74 @@
+name: CI - Build Images & Update Kubernetes Manifests
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write        # needed to commit manifest updates
+  packages: write        # needed to push to GHCR
+
+env:
+  REGISTRY: ghcr.io
+  OWNER: codebyafroj
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  build-and-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Login to GHCR using GitHub-provided token
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # 3️⃣ Build & Push FRONTEND image
+      - name: Build & Push Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ env.OWNER }}/frontend:${{ env.IMAGE_TAG }}
+
+      # 4️⃣ Build & Push BACKEND image
+      - name: Build & Push Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ env.OWNER }}/backend:${{ env.IMAGE_TAG }}
+
+      # 5️⃣ Update frontend deployment image tag
+      - name: Update frontend Kubernetes manifest
+        run: |
+          sed -i \
+          "s|image: ghcr.io/${{ env.OWNER }}/frontend:.*|image: ghcr.io/${{ env.OWNER }}/frontend:${{ env.IMAGE_TAG }}|" \
+          kubernetes/frontend-deployment.yaml
+
+      # 6️⃣ Update backend deployment image tag
+      - name: Update backend Kubernetes manifest
+        run: |
+          sed -i \
+          "s|image: ghcr.io/${{ env.OWNER }}/backend:.*|image: ghcr.io/${{ env.OWNER }}/backend:${{ env.IMAGE_TAG }}|" \
+          kubernetes/backend-deployment.yaml
+
+      # 7️⃣ Commit & push manifest changes (GitOps trigger)
+      - name: Commit and push Kubernetes changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "ci@github.com"
+          git add kubernetes/frontend-deployment.yaml kubernetes/backend-deployment.yaml
+          git commit -m "Deploy frontend & backend images (${IMAGE_TAG})"
+          git push
