@@ -34,8 +34,8 @@ jobs:
       - name: Build & Push Frontend Image
         uses: docker/build-push-action@v5
         with:
-          context: .frontend
-          file: .frontend/Dockerfile
+          context: frontend
+          file: frontend/Dockerfile
           push: true
           tags: |
             ghcr.io/${{ env.OWNER }}/frontend:${{ env.IMAGE_TAG }}
@@ -44,8 +44,8 @@ jobs:
       - name: Build & Push Backend Image
         uses: docker/build-push-action@v5
         with:
-          context: .backend
-          file: .backend/Dockerfile
+          context: backend
+          file: backend/Dockerfile
           push: true
           tags: |
             ghcr.io/${{ env.OWNER }}/backend:${{ env.IMAGE_TAG }}
