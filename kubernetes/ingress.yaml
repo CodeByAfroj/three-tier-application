@@ -5,8 +5,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
-    # This handles /api/* forwarding to backend
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+   
 spec:
   rules:
     - host: app.192.168.167.79.nip.io   # change to your host

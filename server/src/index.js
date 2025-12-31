@@ -2,8 +2,12 @@ import express from "express";
 import cors from 'cors'
 const app = express();
 
-// Dummy data
-app.use(cors())
+
+app.use(cors({
+  origin: "*",
+  credentials: true
+}));
+
 const messages = [
   { id: 1, text: "Hello World!" },
   { id: 2, text: "This is a dummy message." },
