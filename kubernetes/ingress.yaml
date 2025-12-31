@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
-    - host: app.192.168.163.138.nip.io
+    - host: app.192.168.167.79.nip.io
       http:
         paths:
           # Backend first (important)
