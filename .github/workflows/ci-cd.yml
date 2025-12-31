@@ -113,6 +113,9 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [client,server]
     needs: test
     steps:
       - uses: actions/checkout@v4
