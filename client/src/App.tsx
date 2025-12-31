@@ -12,7 +12,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<MsgData[]>("/api/msg");
+        const response = await axios.get<MsgData[]>("http://backend-service:3000/api/msg");
         setData(response.data);
        
       } catch (error) {
