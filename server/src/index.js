@@ -1,29 +1,25 @@
-import express from "express";
-import cors from 'cors'
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import connectDB from './config/db.js';
+import contentRoutes from './routes/content.js';
+
+dotenv.config();
+connectDB();
+
 const app = express();
 
+app.use(cors());
+app.use(express.json());
 
-app.use(cors({
-  origin: "*",
-  credentials: true
-}));
-
-const messages = [
-  { id: 1, text: "Hello World!" },
-  { id: 2, text: "This is a dummy message." },
-  { id: 3, text: "Express makes APIs easy." }
-];
-
-// Root route
-app.get("/", (req, res) => {
-  res.send("Hello Folks");
+app.get('/', (req, res) => {
+  res.json({ message: 'API is running' });
 });
 
-// Dummy messages API
-app.get("/api/msg", (req, res) => {
-  res.json(messages);
-});
+app.use('/api', contentRoutes);
 
-app.listen(3000, () => {
-  console.log("Server Listening on port 3000...");
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
