@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ghcr.io/codebyafroj/backend:387b7a286b70e4ee703e347e4c53b3298e1d4402
+          image: ghcr.io/codebyafroj/backend:13d4bf6247137a847e85e7734533bfab7420b998
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
