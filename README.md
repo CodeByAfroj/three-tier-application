@@ -6,6 +6,10 @@ The application is containerized and divided into three layers: **Frontend, Back
 Three-tier architecture separates the application into independent layers which improves **scalability, maintainability, and security**.
 
 ---
+## Landing Page 
+<img src="client/src/assets/home.png" width="300">
+
+---
 
 # Architecture
 
