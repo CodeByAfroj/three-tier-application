@@ -6,9 +6,6 @@ import './index.css';
 ReactDOM.createRoot(document.getElementById('app')).render(
   <React.StrictMode>
     <App />
-
-
-    
   </React.StrictMode>
 );
 
