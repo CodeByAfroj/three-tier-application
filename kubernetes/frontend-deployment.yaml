@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ghcr.io/codebyafroj/frontend:66cd481cdeabbb8b623333332a419d1b0029bdf8
+          image: ghcr.io/codebyafroj/frontend:1de41b5a2204436b71221aa3a85202bc84a6730b
           imagePullPolicy: Always
           ports:
             - containerPort: 80
