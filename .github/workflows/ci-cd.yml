@@ -2,7 +2,9 @@ name: fullstack pipeline
 
 on:
   pull_request:
-    branches: [main]
+    branches: 
+      - main
+      - 'fix/autoheal-*' 
 
   push:
     branches: [main]
