@@ -7,9 +7,9 @@ import contentRoutes from './routes/content.js'
 dotenv.config()
 connectDB()
 
+const app = express();
 app.use(cors())
 app.use(express.json())
-
 app.get('/', (req, res) => {
   res.json({ message: 'API is working and running...' })
 });
