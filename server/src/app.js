@@ -4,7 +4,7 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import contentRoutes from './routes/content.js'
 
-dotenv.config();
+dotenv.config()
 connectDB();
 
 
