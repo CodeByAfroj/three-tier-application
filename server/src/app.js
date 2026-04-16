@@ -8,7 +8,7 @@ dotenv.config()
 connectDB()
 
 
-app.use(cors())
+const app = express();
 app.use(express.json())
 app.get('/', (req, res) => {
   res.json({ message: 'API is working and running...' })
