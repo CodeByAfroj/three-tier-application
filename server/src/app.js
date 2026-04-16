@@ -18,6 +18,6 @@ app.get("/health", (req, res) => {
   res.status(200).send("OK")
 });
 
-app.use('/api', contentRoutes)
+app.use('/api', contentRoutes);
 
-export default app
+export default app;
