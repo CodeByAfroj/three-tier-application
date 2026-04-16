@@ -20,4 +20,4 @@ app.get("/health", (req, res) => {
 
 app.use('/api', contentRoutes)
 
-export default app;
+export default app
