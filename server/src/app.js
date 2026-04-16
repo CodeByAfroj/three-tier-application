@@ -1,10 +1,11 @@
 import express from 'express';
+const app = express();
 import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js'
 import contentRoutes from './routes/content.js'
 
-dotenv.config()
+dotenv.config({ path: './.env' });
 connectDB()
 
 app.use(cors())
