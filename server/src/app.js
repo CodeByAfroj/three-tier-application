@@ -1,4 +1,5 @@
-import express from 'express';
+const express = require('express');
+const app = express();
 import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
@@ -22,4 +23,4 @@ app.get("/health", (req, res) => {
 
 app.use('/api', contentRoutes);
 
-export default app;
+
