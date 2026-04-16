@@ -5,7 +5,7 @@ import connectDB from './config/db.js'
 import contentRoutes from './routes/content.js'
 
 dotenv.config()
-connectDB();
+connectDB()
 
 app.use(cors())
 app.use(express.json())
