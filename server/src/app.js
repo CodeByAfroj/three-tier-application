@@ -7,6 +7,7 @@ import contentRoutes from './routes/content.js'
 dotenv.config()
 connectDB()
 
+const app = express();
 app.use(cors())
 app.use(express.json())
 
@@ -20,4 +21,5 @@ app.get("/health", (req, res) => {
 
 app.use('/api', contentRoutes)
 
-export default app
+const app = express();
+export default app;
