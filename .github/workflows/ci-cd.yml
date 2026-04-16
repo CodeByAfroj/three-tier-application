@@ -3,6 +3,8 @@ name: fullstack pipeline
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "kubernetes/**"
 
 permissions:
   contents: write
@@ -20,24 +22,29 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     strategy:
       fail-fast: true
       matrix:
         app: [client, server]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: npm
           cache-dependency-path: ${{ matrix.app }}/package-lock.json
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci
         working-directory: ${{ matrix.app }}
 
-      - run: npm run test --if-present
+      - name: Run tests
+        run: npm run test --if-present
         working-directory: ${{ matrix.app }}
 
   build-and-push:
@@ -45,12 +52,13 @@ jobs:
     needs: test
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up QEMU
+      - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: Set up Docker Buildx
+      - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Login to GHCR
@@ -60,7 +68,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Frontend
       - name: Build & Push Frontend
         uses: docker/build-push-action@v5
         with:
@@ -74,7 +81,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # Backend
       - name: Build & Push Backend
         uses: docker/build-push-action@v5
         with:
@@ -93,21 +99,31 @@ jobs:
     needs: build-and-push
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Update frontend image tag
         run: |
-          sed -i \
-          "s|image: ghcr.io/${{ env.OWNER }}/frontend:.*|image: ghcr.io/${{ env.OWNER }}/frontend:${{ env.IMAGE_TAG }}|" \
-          kubernetes/frontend-deployment.yaml
+          sed -i "s|image: ghcr.io/${{ env.OWNER }}/frontend:.*|image: ghcr.io/${{ env.OWNER }}/frontend:${{ env.IMAGE_TAG }}|" kubernetes/frontend-deployment.yaml
 
       - name: Update backend image tag
         run: |
-          sed -i \
-          "s|image: ghcr.io/${{ env.OWNER }}/backend:.*|image: ghcr.io/${{ env.OWNER }}/backend:${{ env.IMAGE_TAG }}|" \
-          kubernetes/backend-deployment.yaml
+          sed -i "s|image: ghcr.io/${{ env.OWNER }}/backend:.*|image: ghcr.io/${{ env.OWNER }}/backend:${{ env.IMAGE_TAG }}|" kubernetes/backend-deployment.yaml
 
-      - name: Commit & Push changes
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "ci@github.com"
+          git add kubernetes/frontend-deployment.yaml kubernetes/backend-deployment.yaml
+          git commit -m "Deploy frontend & backend images ($IMAGE_TAG)" || echo "No changes to commit"
+
+      - name: Pull latest branch state
+        run: git pull --rebase origin main
+
+      - name: Push changes
         uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
