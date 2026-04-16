@@ -1,4 +1,3 @@
-
 name: fullstack pipeline
 
 on:
@@ -9,6 +8,10 @@ permissions:
   contents: write
   packages: write
 
+concurrency:
+  group: deployment
+  cancel-in-progress: true
+
 env:
   REGISTRY: ghcr.io
   OWNER: codebyafroj
@@ -18,9 +21,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: true
       matrix:
-        app: [client,server]
-  
+        app: [client, server]
+
     steps:
       - uses: actions/checkout@v4
 
@@ -32,11 +36,14 @@ jobs:
 
       - run: npm ci
         working-directory: ${{ matrix.app }}
-      - run: npm run test || echo "no test found"
+
+      - run: npm run test --if-present
         working-directory: ${{ matrix.app }}
 
   build-and-push:
     runs-on: ubuntu-latest
+    needs: test
+
     steps:
       - uses: actions/checkout@v4
 
@@ -53,6 +60,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Frontend
       - name: Build & Push Frontend
         uses: docker/build-push-action@v5
         with:
@@ -60,8 +68,13 @@ jobs:
           file: client/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: ghcr.io/${{ env.OWNER }}/frontend:${{ env.IMAGE_TAG }}
+          tags: |
+            ghcr.io/${{ env.OWNER }}/frontend:${{ env.IMAGE_TAG }}
+            ghcr.io/${{ env.OWNER }}/frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
+      # Backend
       - name: Build & Push Backend
         uses: docker/build-push-action@v5
         with:
@@ -69,11 +82,16 @@ jobs:
           file: server/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: ghcr.io/${{ env.OWNER }}/backend:${{ env.IMAGE_TAG }}
+          tags: |
+            ghcr.io/${{ env.OWNER }}/backend:${{ env.IMAGE_TAG }}
+            ghcr.io/${{ env.OWNER }}/backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   update-k8s:
     runs-on: ubuntu-latest
     needs: build-and-push
+
     steps:
       - uses: actions/checkout@v4
 
@@ -89,10 +107,7 @@ jobs:
           "s|image: ghcr.io/${{ env.OWNER }}/backend:.*|image: ghcr.io/${{ env.OWNER }}/backend:${{ env.IMAGE_TAG }}|" \
           kubernetes/backend-deployment.yaml
 
-      - name: Commit and push Kubernetes changes
-        run: |
-          git config user.name "github-actions"
-          git config user.email "ci@github.com"
-          git add kubernetes/frontend-deployment.yaml kubernetes/backend-deployment.yaml
-          git commit -m "Deploy frontend & backend images ($IMAGE_TAG)"
-          git push
+      - name: Commit & Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
