@@ -8,7 +8,7 @@ The stack is split into a React frontend, a Node.js API, and a MongoDB database.
 
 ## Home Page
 
-<img src="client/src/assets/home.png" width="300">
+<img src="client/src/assets/home.png">
 
 ---
 
