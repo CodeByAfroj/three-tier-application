@@ -1,4 +1,4 @@
-# Three-Tier Application — Kubernetes Deployment
+# PathFinder — Kubernetes Deployment
 
 This project is a **three-tier web application** (presentation, application, data) packaged as containers and **deployed on Kubernetes**. Images are built and pushed to **GitHub Container Registry (GHCR)** on every push to `main`, and the pipeline updates the image tags in the Kubernetes manifests.
 
