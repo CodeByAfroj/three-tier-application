@@ -1,4 +1,4 @@
-import request from "supertest";
+import { connectDB } from '../src/app';
 import app from "../app.js";
 
 describe("Health Check API", () => {
