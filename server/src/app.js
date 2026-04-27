@@ -1,11 +1,11 @@
-import express from 'express';
+const db = require('./config/db');
 import dotenv from 'dotenv';
 import cors from 'cors';
 
 
 
 dotenv.config();
-connectDB();
+db.connectDB();
 const app = express();
 app.use(cors())
 app.use(express.json());
