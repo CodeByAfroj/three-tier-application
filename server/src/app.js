@@ -1,4 +1,4 @@
-import express from 'express';
+export { connectDB };
 import dotenv from 'dotenv';
 import cors from 'cors';
 
