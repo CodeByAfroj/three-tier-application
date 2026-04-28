@@ -1,5 +1,5 @@
 import express from 'express';
-import dotenv from 'dotenv';
+import { config as dotenvConfig } from 'dotenv';
 import cors from 'cors';
 
 dotenv.config();
