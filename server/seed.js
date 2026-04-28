@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
+import { config as dotenvConfig } from 'dotenv';
 
 import Career from "./src/models/Career.js";
 import DocResource from "./src/models/DocResource.js";
