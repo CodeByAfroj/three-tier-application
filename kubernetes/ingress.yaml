@@ -7,7 +7,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: app.myapp.local
+    - host: pathfinderrr.duckdns.org
       http:
         paths:
           - path: /api(/|$)(.*)
